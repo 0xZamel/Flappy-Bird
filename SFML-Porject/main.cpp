@@ -7,121 +7,85 @@
 using namespace std;
 using namespace sf;
 
-int status=1;
-/*
-	1	----->	NOT STARTED
-	2	----->	PLAYING
-	3	----->	Died
-*/
-float spdd = -0.65f;
-float tt = 0.19f;
-RectangleShape upp(Vector2f(200, 10));
-RectangleShape downn(Vector2f(200, 10));
+
+/******************************
+*	1	----->	NOT STARTED	  *
+*	2	----->	PLAYING		  *
+*	3	----->	Died		  *							  
+******************************/
+int status = 1;
+
+
+RenderWindow window(VideoMode().getDesktopMode(), "Game", Style::Close | Style::Fullscreen);
+Event _event;
+const float SCREEN_W = window.getSize().x;
+const float SCREEN_H = window.getSize().y;
 
 void playagain();
 void beforeStart();
 void updateScore();
+void setAssests();
+void draw();
+void updateStatus();
+void gamePlay();
+void closeWindow();
 
-bool hasCollided = false;  // for collision	
-const int SCREEN_W =512 ;
-const int SCREEN_H = 460;
-Clock wingTimer;
-bool gameOverBool = false;
+
 struct BirdStruct
 {
-	Sprite sprite; Texture birds[3]; Sound jumpSound; SoundBuffer jBuffer; Sound collSound; SoundBuffer cBuffer;
+	Sprite sprite;		Texture birds[3];
+	Sound jumpSound;	SoundBuffer jBuffer;
+	Clock wingTimer;
+	RectangleShape upp;
+	RectangleShape downn;
 	int currBird = 0;
 	float maxAngle = 45.0f;
-
-	
-	
-	
-
-
-
-	// for bird moving
-	float jumpSpeed = -1.26f;
-	float gravity = 0.16f;
+	float jumpSpeed = -2.26f;
+	float gravity = 0.22f;
 	bool hasMoved = false;
-
-	void spawn(){
+	float rotationAngle = 0;
+	float yVelocity = -0.15f;
+	float yGravity = 0.07f;
 	
-		sprite.setPosition(512 / 2, 460 / 2);
-	birds[0].loadFromFile("bird-01.png");
-	birds[1].loadFromFile("bird-02.png");
-	birds[2].loadFromFile("bird-03.png");
-
-	sprite.setTexture(birds[0]);
-	sprite.setScale(0.5, 0.5);
-	sprite.setOrigin(sprite.getGlobalBounds().width / 2, sprite.getGlobalBounds().width / 2);
-
-	jBuffer.loadFromFile("jump.wav");
-	jumpSound.setBuffer(jBuffer);
-
-	cBuffer.loadFromFile("collided.wav");
-	collSound.setBuffer(cBuffer);
+	void set() {
+		RectangleShape _up(Vector2f(200, 10));
+		RectangleShape _down(Vector2f(200, 10));
+		upp = _up;
+		downn = _down;
+		sprite.setPosition(SCREEN_W / 2, SCREEN_H/ 2);
+		birds[0].loadFromFile("flappy1.png");
+		birds[1].loadFromFile("flappy2.png");
+		birds[2].loadFromFile("flappy3.png");
+		sprite.setTexture(birds[0]);
+		sprite.setScale(1.5, 1.5);
+		sprite.setOrigin(sprite.getGlobalBounds().width / 2, sprite.getGlobalBounds().width / 2);
+		jBuffer.loadFromFile("jump.wav");
+		jumpSound.setBuffer(jBuffer);
 	}
 	void wingMove() {
 
-		
-		if (wingTimer.getElapsedTime().asMilliseconds() >= 100) {
-			currBird = (currBird+1) % 3;
+
+		if (wingTimer.getElapsedTime().asMilliseconds() >= 150) {
+			currBird = (currBird + 1) % 3;
 			sprite.setTexture(birds[currBird]);
-			
+
 			wingTimer.restart();
-		
-			
+
+
 		}
-		
-		
-	}
-		
 
-	void Jump(Event event, RenderWindow& window) {
-		
-		
-
-			if (event.type == Event::KeyPressed) {
-				if (event.key.code == Keyboard::Space && status == 3) {
-					
-					playagain();
-				}
-				if (event.key.code == Keyboard::Space && !hasMoved) {
-					status = 2;
-					//sprite.rotate(-maxAngle);
-					jumpSpeed = -2.51f;
-					hasMoved = true;
-					if(!hasCollided)
-					jumpSound.play();
-				}
-				
-			}
-			if (event.type = Event::KeyReleased) {
-				if (event.key.code == Keyboard::Space) {
-					hasMoved = false;
-				}
-			}
-
-
-		
-		
 
 	}
-
+	void Jump(float speed);
 	void Fall() {
 		jumpSpeed += gravity;
-		sprite.move(Vector2f(0, 2*jumpSpeed));
-		
-		
+		sprite.move(Vector2f(0, 2 * jumpSpeed));
+
+
 	}
-
-
-	void draw(RenderWindow& window) {
+	void draw() {
 		window.draw(sprite);
 	}
-
-	float rotationAngle=0;
-
 	void rotation() {
 		// Rotate Down
 		if (jumpSpeed > 0) {
@@ -139,117 +103,94 @@ struct BirdStruct
 			}
 		}
 	}
-	bool f = false; Clock tt;
-	
-	
-
-	
-
 }bird;
 struct pipeStruct
 {
-	
-
-	Sprite up[2], down[2];
-	Texture tx_up, tx_down;
-	const int GAP_H = 110;
-	const int PIPE_H= 360;
-	void spawn() {
-		srand(time(NULL));
+	Sprite up[3], down[3];
+	void set() {
 		tx_up.loadFromFile("PipeUp.png");
 		tx_down.loadFromFile("PipeDown.png");
-
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < 3; i++) {
 			up[i].setTexture(tx_up);
 			down[i].setTexture(tx_down);
-
-			up[i].setScale(0.9, 1);
-			down[i].setScale(0.9, 1);
-			up[i].setPosition(SCREEN_W, 0);                
+			up[i].setScale(1.4, 1.8);
+			down[i].setScale(1.4, 1.8);
+			up[i].setPosition(SCREEN_W, 0);
 			down[i].setPosition(SCREEN_W, 0);
-
-			
-
 		}
-
-		
-
-		down[0].setPosition(550 + 400, -140);
-		up[0].setPosition(550 + 400, 330);
-		down[1].setPosition(800 + 400, -220);
-		up[1].setPosition(800 + 400, 250);
-		
+		int yPos = -(30 + rand() % 431);
+		int yPoss = -(30 + rand() % 431);
+		int yPosss = -(30 + rand() % 431);
+		down[0].setPosition( SCREEN_W+70 , yPos);
+		up[0].setPosition( SCREEN_W+70, yPos + GAP_H);
+		down[1].setPosition(up[0].getPosition().x + GAP_X, yPoss);
+		up[1].setPosition(up[0].getPosition().x + GAP_X, yPoss + GAP_H);
+		down[2].setPosition(up[1].getPosition().x + GAP_X, yPosss);
+		up[2].setPosition(up[1].getPosition().x + GAP_X, yPosss + GAP_H);
 	}
-
+	Texture tx_up, tx_down;
+	const int GAP_H = 850;
+	const int GAP_X = 460;
+	const int PIPE_H = up[0].getGlobalBounds().height;
 	void move(float speed) {
-
-		
-
-		for (int i = 0; i < 2; i++) {
-
+		for (int i = 0; i < 3; i++) {
 			up[i].move(Vector2f(-speed, 0));
 			down[i].move(Vector2f(-speed, 0));
 			if (up[i].getPosition().x <= -50) {
-
-				int yPos = -(140 + rand() % 141);
+				int yPos = -(30 + rand() % 431);
 				down[i].setPosition(SCREEN_W, yPos);
-				up[i].setPosition(SCREEN_W, yPos + GAP_H + PIPE_H );
-
+				up[i].setPosition(SCREEN_W, yPos + GAP_H);
+				up[i].setPosition(SCREEN_W, up[i].getPosition().y);
+				down[i].setPosition(SCREEN_W, down[i].getPosition().y);
 			}
 		}
 	}
-
-	void draw(RenderWindow& window) {
-		for (int i = 0; i < 2; i++) {
+	void draw() 
+	{
+		for (int i = 0; i < 3; i++) {
 			window.draw(pipes.up[i]);  window.draw(pipes.down[i]);
 		}
 	}
-
 }pipes;
-struct collisionStruct {
-	
-
+struct collisionStruct 
+{
+	bool isCollided = false;  // for collision	
 	Sound collision; SoundBuffer cBuffer;
-	bool soundCPlayed=false;
-	void spawnCollision() {
+	bool soundCPlayed = false;
+	void set() {
 
 		cBuffer.loadFromFile("collided.wav");
 		collision.setBuffer(cBuffer);
-		
-		
+
+
 	}
-	void checkCollision(Sprite& player, Sprite& pipeup, Sprite& pipedown , Sprite& land) {
-
+	void checkCollision(Sprite& player, Sprite& pipeup, Sprite& pipedown, Sprite& land) {
 		if (player.getGlobalBounds().intersects(pipeup.getGlobalBounds())) {
-
-			hasCollided = true;
-
+			isCollided = true;
 		}
 		else if (player.getGlobalBounds().intersects(pipedown.getGlobalBounds())) {
-			hasCollided=  true;
+			isCollided = true;
 		}
 		else if (player.getGlobalBounds().intersects(land.getGlobalBounds())) {
-			hasCollided=  true;
+			isCollided = true;
 		}
 		else
-		hasCollided = false;
+			isCollided = false;
 	}
-
-
 }collision;
 struct gameStruct
-{	
+{
 	bool hasIncreased;
 	bool hasIncreased2;
-	int score=0;
-	int highestScore=0;
+	bool hasIncreased3;
+	int score = 0;
+	int highestScore = 0;
 	Sound scoreSound; SoundBuffer ssBuffer;
 	Sprite invisiblePipe; Texture tx;
 	Font font;
 	Text scoreText;
 	Text startingText;
-
-	void spawnText() {
+	void setText() {
 		font.loadFromFile("FlappyFont.ttf");
 		scoreText.setFont(font);
 		scoreText.setString("SCORE: ");
@@ -258,24 +199,26 @@ struct gameStruct
 		startingText.setFont(font);
 		//startingText.setColor(Color::Black);
 		startingText.setString("TAP TO START");
-		startingText.setPosition(165, 150);
+		startingText.setOrigin(startingText.getGlobalBounds().width / 2, startingText.getGlobalBounds().height / 2);
+		startingText.setPosition(SCREEN_W / 2 , SCREEN_H / 2 - 80);
 		startingText.setScale(1.2, 1.2);
 	}
-	void spawnInvisible() {
+	void setInvisible() {
 		hasIncreased = false;
 		hasIncreased2 = false;
-		
-		invisiblePipe.setScale(0.9, 1);
+		hasIncreased3 = false;
+
+		invisiblePipe.setScale(0.9, 2);
 		tx.loadFromFile("PipeUp.png");
 		invisiblePipe.setTexture(tx);
-		invisiblePipe.setPosition(203, 300);
+		invisiblePipe.setPosition(SCREEN_W /2 - 50, 400);
 		invisiblePipe.setColor(Color::Red);
-		
+
 	}
 	void scoreCount() {
 		if (pipes.up[0].getGlobalBounds().intersects(invisiblePipe.getGlobalBounds()) && !hasIncreased) {
 			score++;
-			
+
 			hasIncreased = true;
 			scoreSound.play();
 		}
@@ -286,7 +229,7 @@ struct gameStruct
 
 		if (pipes.up[1].getGlobalBounds().intersects(invisiblePipe.getGlobalBounds()) && !hasIncreased2) {
 			score++;
-			
+
 			hasIncreased2 = true;
 			scoreSound.play();
 
@@ -295,51 +238,62 @@ struct gameStruct
 		if (!(pipes.up[1].getGlobalBounds().intersects(invisiblePipe.getGlobalBounds()))) {
 			hasIncreased2 = false;
 		}
+		if (pipes.up[2].getGlobalBounds().intersects(invisiblePipe.getGlobalBounds()) && !hasIncreased3) {
+			score++;
+
+			hasIncreased3 = true;
+			scoreSound.play();
+
+		}
+
+		if (!(pipes.up[2].getGlobalBounds().intersects(invisiblePipe.getGlobalBounds()))) {
+			hasIncreased3 = false;
+		}
 		if (score > highestScore)
 			highestScore = score;
-		
-		
-	}
 
-	
-	void drawScore(RenderWindow& window) {
+
+	}
+	void drawScore() {
 		window.draw(scoreText);
 	}
-	void drawStartText(RenderWindow& window) {
+	void drawStartText() {
 		window.draw(startingText);
 	}
 
 }game;
 struct backgroundStruct {
 
-	RectangleShape sky; Texture skyT, landT; Sprite lands[2]; Sprite gameOverTitle,gameOverBody; Texture gt,gtt;
+	Sprite sky; Texture skyT, landT; Sprite lands[3];
 	int currLand = 0; // TO MOVE THE LAND 
 	Text score;
-	void spawn() {
-		RectangleShape skyy(Vector2f(512, 460)); sky = skyy;
+	void set() {
+
 		skyT.loadFromFile("sky.png");
 		landT.loadFromFile("land.png");
-		sky.setTexture(&skyT);
+		sky.setTexture(skyT);
+		sky.setScale(1.7, 1);
 
-		
-		for (int i = 0; i < 2; i++) {
+
+		for (int i = 0; i < 3; i++) {
 			lands[i].setTexture(landT);
-			lands[i].setScale(0.7, 0.5);
+			lands[i].setScale(1.2, 0.6);
 		}
-			lands[1].setPosition(Vector2f(506, 400.0f));
-			lands[0].setPosition(Vector2f(0, 400.0f));
-			// diffrecne between them = 36
-		
-		
+		lands[0].setPosition(Vector2f(0, SCREEN_H-60));
+		lands[1].setPosition(Vector2f(lands[0].getGlobalBounds().width-7.8, SCREEN_H-60));
+		lands[2].setPosition(Vector2f(2*lands[0].getGlobalBounds().width-15.6, SCREEN_H-60));
+		// diffrecne between them = 36
+
+
 
 	}
-	
-	
-	void drawSky(RenderWindow& window) {
+
+
+	void drawSky() {
 		window.draw(sky);
 	}
-	void drawLand(RenderWindow& window) {
-		for (int i = 0; i < 2; i++) {
+	void drawLand() {
+		for (int i = 0; i < 3; i++) {
 			window.draw(lands[i]);
 		}
 	}
@@ -347,33 +301,30 @@ struct backgroundStruct {
 
 		lands[currLand].move(Vector2f(-speed, 0));
 		currLand++;
-		currLand %= 2;
-
-		if (lands[0].getPosition().x <= -506) {
-			lands[0].setPosition(Vector2f(506, 400.0f));
-		}
-		if (lands[1].getPosition().x <= -506) {
-			lands[1].setPosition(Vector2f(506, 400.0f));
+		currLand %= 3;
+		for (int i = 0; i < 3; i++) {
+			if (lands[i].getPosition().x <= -SCREEN_W - 7.7) {
+				lands[i].setPosition(Vector2f(SCREEN_W - 7.8, SCREEN_H - 60));
+			}
+			
 		}
 	}
 }background;
 struct died
 {
+	bool gameOverBool = false;
 	Sound sound; SoundBuffer sBuffer;
 	bool doneit = false;
 	float speed = 7.2f;
-
-	
-	Sprite gameOverTitle, gameOverBody; Texture gt, gtt; 
+	Sprite gameOverTitle, gameOverBody; Texture gt, gtt;
 	Text score; Text high;
-	
-
-	void spawn() {
+	void set() {
 		sBuffer.loadFromFile("die-101soundboards.wav");
 		sound.setBuffer(sBuffer);
 	}
+	float anglee = 90;
 	void done() {
-
+		
 		if (!doneit) {
 			bird.sprite.setRotation(90);
 			sound.play();
@@ -382,29 +333,33 @@ struct died
 
 		bird.sprite.move(0, speed);
 		
-		for (int i = 0; i < 2; i++) {
-			if (bird.sprite.getPosition().y>390) {
-			bird.sprite.move(0, -speed);
-			bird.sprite.setRotation(135);
-			
-				
+			if (bird.sprite.getPosition().y > SCREEN_H- 100) {
+				bird.sprite.move(0, -speed);
+				if (anglee >= 135 && anglee <= 200)
+				{
+					anglee+=2;
+					bird.sprite.setRotation(anglee);
+				}
 			}
+				if (anglee <= 135)
+					bird.sprite.setRotation(anglee);
+		anglee +=1;
 
-		}
+		
 	}
-	void spawnGameOver() {
+	void setGameOver() {
 		if (!gameOverBool) {
 			gameOverBool = true;
 			gt.loadFromFile("Game-Over-Title.png");
 			gameOverTitle.setTexture(gt);
 			gameOverTitle.setOrigin(gameOverTitle.getGlobalBounds().width / 2, gameOverTitle.getGlobalBounds().height / 2);
-			
+
 			gameOverTitle.setScale(0.4, 0.4);
 
 			gtt.loadFromFile("Game-Over-Body.png");
 			gameOverBody.setTexture(gtt);
 			gameOverBody.setOrigin(gameOverBody.getGlobalBounds().width / 2, gameOverBody.getGlobalBounds().height / 2);
-			
+
 			gameOverBody.setScale(0.4, 0.4);
 
 			score.setFillColor(Color::White);
@@ -412,203 +367,224 @@ struct died
 
 			high.setFillColor(Color::White);
 			high.setFont(game.font);
-			high.setScale(0.8, 0.8);
+			high.setScale(1, 1);
 
 			score.setOutlineColor(Color::Black);
-			score.setScale(0.8, 0.8);
+			score.setScale(1, 1);
 
-			gameOverBody.setPosition(512 / 2, 400);  // 75
-			high.setPosition(315, 410);
-			score.setPosition(315, 371);
-			gameOverTitle.setPosition(512 / 2, 60);
+			gameOverBody.setPosition(SCREEN_W / 2, 650);  
+			gameOverTitle.setPosition(SCREEN_W/2 , 300);
+			score.setPosition(SCREEN_W / 2 + 59 , 619);
+			high.setPosition(SCREEN_W / 2 + 59, 655);
 		}
-
-		// gameoveBody  256 , 245   title  256 , 170
 	}
-	void drawGameOver(RenderWindow& window) {
+	void drawGameOver() {
 		window.draw(gameOverTitle);
 		window.draw(gameOverBody);
 		window.draw(score);
 		window.draw(high);
 	}
 	void moveGameOver() {
-		if (gameOverBody.getPosition().y >= 245) {
+		if (gameOverBody.getPosition().y >= SCREEN_H/2) 
+		{
 			gameOverBody.move(0, -5);
 		}
-		if (gameOverTitle.getPosition().y <= 160) {
+		if (gameOverTitle.getPosition().y <= SCREEN_H / 2 - 75)
+		{ 
 			gameOverTitle.move(0, 5);
 		}
-		if (score.getPosition().y >= 216) {
+		if (score.getPosition().y >= SCREEN_H / 2.0f - 27.7)
+		{ 
 			score.move(0, -5);
 		}
-		if (high.getPosition().y >= 255) {
+		if (high.getPosition().y >= SCREEN_H / 2 + 12)
+		{
 			high.move(0, -5);
 		}
 
 		// gameoveBody  256 , 245   title  256 , 170
 	}
-	// gameoveBody  256 , 245   title  256 , 170 , score 216
-
 }die;
 
-	int main() {
-		
-		srand(time(NULL));
-		RenderWindow window(VideoMode(512, 460), "Game", Style::Close | Style::Resize);
-		window.setFramerateLimit(60);
-		window.setKeyRepeatEnabled(false);
-		bird.spawn();
-		pipes.spawn();
-		game.spawnText();
-		die.spawnGameOver();
-		background.spawn();
-		game.spawnInvisible();
-		die.spawn();
-		collision.spawnCollision();
-
-		cout << background.lands[0].getGlobalBounds().width;
-		
-
-
-		
-
-		
-		while (window.isOpen()) {
-			Event _event;
-			while (window.pollEvent(_event)) {
-				if (_event.type == Event::Closed)
-				{
-					window.close();
-					break;
-				}
-				
-					bird.Jump(_event,window);
-				
-				
-
-			}
-			
-
-			// waiting to start
-			if (status == 1) {
-				background.moveLands(5);
-				bird.wingMove();
-				beforeStart();
-			}
-
-
-			// playing
-			if (status == 2) {
-				
-				bird.rotation();
-				// for check collision
-				for (int cc =0 ; cc < 2; cc++) {
-				collision.checkCollision(bird.sprite, pipes.up[cc], pipes.down[cc] , background.lands[cc]);
-				if (hasCollided) {
-					if (!collision.soundCPlayed) {
-						collision.collision.play();
-						collision.soundCPlayed = true;
-					}
-					status = 3;
-					break;
-				}
-			}
-
-				// while the bird is alive
-				if (!hasCollided)
-				{
-					bird.Fall();
-					pipes.move(6);
-					bird.wingMove();
-					background.moveLands(7);
-					game.scoreCount();
-
-				}
-
-				// if the bird died
-				if (hasCollided){
-					if (!collision.soundCPlayed) {
-						bird.collSound.play();
-						collision.soundCPlayed = true;
-					}
-					status = 3;	
-					
-				}
-
-			}
-
-			 // die
-			if (status == 3)
-			{
-				die.done();
-				die.moveGameOver();							
-			}
-			
-			
-			
-			updateScore();
-
-			//window.clear();
-			background.drawSky(window);
-			pipes.draw(window);
-			background.drawLand(window);
-			//window.draw(game.invisiblePipe);
-			bird.draw(window);
-			game.drawScore(window);
-			if (status == 1) {
-				game.drawStartText(window);
-			}
-			if (status == 3)
-			{
-				die.drawGameOver(window);
-			}
-			
-
-			// gameoveBody  256 , 245   title  256 , 170 , score 315 ,216
-			window.display();
-
+int main() {
+	srand(time(NULL));
+	setAssests();
+	while (window.isOpen())
+	{
+		while (window.pollEvent(_event)) {
+			updateStatus();
+			bird.Jump(3.51);
+			closeWindow();
 		}
-		return 0;
+		gamePlay();
+		draw();
 	}
+	return 0;
+}
 
 void beforeStart() {
-	upp.setFillColor(Color::Red);
-	downn.setFillColor(Color::Red);
-	upp.setPosition(200, 202);
-	downn.setPosition(200, 249);
+	
+	bird.upp.setFillColor(Color::Red);
+	bird.downn.setFillColor(Color::Red);
+	bird.upp.setPosition(SCREEN_W / 2 - 100 , SCREEN_H / 2 - 30);
+	bird.downn.setPosition(SCREEN_W / 2 - 100 , SCREEN_H /  2 + 20);
 
-		bird.sprite.move(0, spdd);
-		if (bird.sprite.getGlobalBounds().intersects(upp.getGlobalBounds())) {
-			spdd +=tt;
-		}
-		if (bird.sprite.getGlobalBounds().intersects(downn.getGlobalBounds())) {
-			spdd -=tt;
-		}
-
-
+	bird.sprite.move(0, bird.yVelocity);
+	if (bird.sprite.getGlobalBounds().intersects(bird.upp.getGlobalBounds())) {
+		bird.yVelocity += bird.yGravity;
 	}
+	if (bird.sprite.getGlobalBounds().intersects(bird.downn.getGlobalBounds())) {
+		bird.yVelocity -= bird.yGravity;
+	}
+
+
+}
 void playagain() {
-	pipes.down[0].setPosition(550 + 400, -140);
-	pipes.up[0].setPosition(550 + 400, 330);
-	pipes.down[1].setPosition(800 + 400, -220);
-	pipes.up[1].setPosition(800 + 400, 250);
-	bird.sprite.setPosition(512 / 2, 460 / 2);
+	pipes.set();
+	bird.sprite.setPosition(SCREEN_W / 2, SCREEN_H / 2);
 	collision.soundCPlayed = false;
 	die.doneit = false;
 	game.score = 0;
-	gameOverBool = false;
-
-	die.gameOverBody.setPosition(512 / 2, 400);  // 75
-	die.high.setPosition(315, 410);
-	die.score.setPosition(315, 371);
-	die.gameOverTitle.setPosition(512 / 2, 60);
+	die.gameOverBool = false;
+	die.gameOverBody.setPosition(SCREEN_W / 2, 650);
+	die.gameOverTitle.setPosition(SCREEN_W / 2, 300);
+	die.score.setPosition(SCREEN_W / 2 + 59, 619);
+	die.high.setPosition(SCREEN_W / 2 + 59, 655);
+	die.anglee = 90;
+	collision.isCollided = false;
+	status = 2;
 }
 void updateScore() {
 	game.scoreText.setString("SCORE: " + to_string(game.score));
 	die.score.setString(to_string(game.score));
 	die.high.setString(to_string(game.highestScore));
 }
+void setAssests() {
+	window.setFramerateLimit(60);
+	bird.set();
+	pipes.set();
+	game.setText();
+	die.setGameOver();
+	background.set();
+	game.setInvisible();
+	die.set();
+	collision.set();
+}
+void draw() {
+	window.clear();
+	background.drawSky();
+	pipes.draw();
+	//window.draw(game.invisiblePipe);
+	bird.draw();
+	
+	background.drawLand();
+	game.drawScore();
+	if (status == 1) {
+		game.drawStartText();
+	}
+	if (status == 3)
+	{
+		die.drawGameOver();
+	}
+	//window.draw(upp);
+	//window.draw(downn);
+	window.display();
+}
+void updateStatus() 
+{
+		if (_event.type == Event::KeyPressed) 
+		{
+			if (_event.key.code == Keyboard::Space && status == 3) {
+				playagain();
+			}
+			if (_event.key.code == Keyboard::Space) {
+				status = 2;
+			}
 
+		}
+
+	if (status == 2) 
+	{
+		if (collision.isCollided)
+		{
+			status = 3;
+		}	
+	}
+
+
+}
+void gamePlay() 
+{
+	if (status == 1) {
+		background.moveLands(5);
+		bird.wingMove();
+		beforeStart();
+	}
+	// playing
+	if (status == 2) 
+	{
+
+		bird.rotation();
+		bird.Jump(3.51);
+		// for check collision
+		for (int cc = 0; cc < 3; cc++) {
+			collision.checkCollision(bird.sprite, pipes.up[cc], pipes.down[cc], background.lands[cc]);
+			if (collision.isCollided) {
+				if (!collision.soundCPlayed) {
+					collision.collision.play();
+					collision.soundCPlayed = true;
+				}
+				status = 3;
+				break;
+			}
+		}
+
+		// while the bird is alive
+		if (!collision.isCollided)
+		{
+			bird.Fall();
+			pipes.move(5.3);
+			bird.wingMove();
+			background.moveLands(9);
+			game.scoreCount();
+		}
+
+	}
+	// die
+	if (status == 3)
+	{
+		die.done();
+		die.moveGameOver();
+	}
+	updateScore();
+}
+void closeWindow(){
+	while (window.pollEvent(_event)) 
+	{
+		if (_event.type == Event::Closed)
+		{
+			window.close();
+			break;
+		}
+	}
+}
+
+void BirdStruct::Jump(float speed)
+{
+	if (_event.type == Event::KeyPressed) {
+		if (_event.key.code == Keyboard::Space && !hasMoved) {
+			jumpSpeed = -speed;
+			hasMoved = true;
+			if (!collision.isCollided)
+				jumpSound.play();
+		}
+	}
+	if (_event.type == Event::KeyReleased) {
+		if (_event.key.code == Keyboard::Space) {
+			hasMoved = false;
+		}
+	}
+}
 
 
 

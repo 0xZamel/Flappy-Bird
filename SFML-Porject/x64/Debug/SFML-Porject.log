@@ -1,1 +1,68 @@
-﻿  SFML-Porject.vcxproj -> D:\1OMAR\COMM\SFML-Porject\x64\Debug\SFML-Porject.exe
+﻿  main.cpp
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(21,40): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(21,40): warning C4244:         with
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(21,40): warning C4244:         [
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(21,40): warning C4244:             T=unsigned int
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(21,40): warning C4244:         ]
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(21,22): warning C4244: 'initializing': conversion from 'T' to 'const float', possible loss of data
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(21,22): warning C4244:         with
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(21,22): warning C4244:         [
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(21,22): warning C4244:             T=unsigned int
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(21,22): warning C4244:         ]
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(22,40): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(22,40): warning C4244:         with
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(22,40): warning C4244:         [
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(22,40): warning C4244:             T=unsigned int
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(22,40): warning C4244:         ]
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(22,22): warning C4244: 'initializing': conversion from 'T' to 'const float', possible loss of data
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(22,22): warning C4244:         with
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(22,22): warning C4244:         [
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(22,22): warning C4244:             T=unsigned int
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(22,22): warning C4244:         ]
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(134,44): warning C4244: 'initializing': conversion from 'T' to 'const int', possible loss of data
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(134,44): warning C4244:         with
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(134,44): warning C4244:         [
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(134,44): warning C4244:             T=float
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(134,44): warning C4244:         ]
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(116,24): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(116,19): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(117,26): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(117,21): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(124,38): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(125,40): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(126,54): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(127,58): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(128,54): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(129,59): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(141,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(142,38): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(204,30): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(204,25): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(211,26): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(275,16): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(280,27): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(280,22): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(283,65): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(283,65): warning C4244:         with
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(283,65): warning C4244:         [
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(283,65): warning C4244:             T=float
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(283,65): warning C4244:         ]
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(284,67): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(284,67): warning C4244:         with
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(284,67): warning C4244:         [
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(284,67): warning C4244:             T=float
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(284,67): warning C4244:         ]
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(307,44): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(307,44): warning C4244:         with
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(307,44): warning C4244:         [
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(307,44): warning C4244:             T=float
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(307,44): warning C4244:         ]
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(357,32): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(357,27): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(363,31): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(363,26): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(410,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(416,14): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(528,13): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\1OMAR\COMM\SFML-Porject\SFML-Porject\main.cpp(546,15): warning C4305: 'argument': truncation from 'double' to 'float'
+  SFML-Porject.vcxproj -> D:\1OMAR\COMM\SFML-Porject\x64\Debug\SFML-Porject.exe
