@@ -11,7 +11,8 @@ using namespace sf;
 /******************************
 *	1	----->	NOT STARTED	  *
 *	2	----->	PLAYING		  *
-*	3	----->	Died		  *							  
+*	3	----->	Died		  *
+*   4   ----->  Credits       *							  
 ******************************/
 int status = 1;
 
@@ -281,8 +282,8 @@ struct backgroundStruct {
 			lands[i].setScale(1.7, 0.7);
 		}
 		lands[0].setPosition(Vector2f(0, SCREEN_H-60));
-		lands[1].setPosition(Vector2f(lands[0].getGlobalBounds().width-14, SCREEN_H-60));
-		lands[2].setPosition(Vector2f(2*lands[0].getGlobalBounds().width-28, SCREEN_H-60));
+		lands[1].setPosition(Vector2f(lands[0].getGlobalBounds().width-4, SCREEN_H-60));
+		lands[2].setPosition(Vector2f(2*lands[0].getGlobalBounds().width-8, SCREEN_H-60));
 		// diffrecne between them = 36
 
 
@@ -300,7 +301,9 @@ struct backgroundStruct {
 	}
 	void moveLands(float speed) {
 
-		lands[currLand].move(Vector2f(-speed, 0));
+		lands[0].move(Vector2f(-speed, 0));
+		lands[1].move(Vector2f(-speed, 0));
+		lands[2].move(Vector2f(-speed, 0));
 		currLand++;
 		currLand %= 3;
 		for (int i = 0; i < 3; i++) {
@@ -406,11 +409,90 @@ struct died
 		// gameoveBody  256 , 245   title  256 , 170
 	}
 }die;
+struct credits {
+	Text text[3];  Clock wingTimer; int currBird = 0;
+	RectangleShape black;
+	Sprite birds[3];
+	void set() {
+		RectangleShape _b(Vector2f(SCREEN_W, SCREEN_H));
+		_b.setFillColor(Color(0, 0, 0, 150));
+		black = _b;
 
+		for (int i = 0; i < 3; i++) {
+			text[i].setFont(game.font);
+			text[i].setString("-----------------------");
+			text[i].setFillColor(Color::Blue);
+			text[i].setOrigin(text[i].getGlobalBounds().width / 2, text[i].getGlobalBounds().height / 2);
+			text[i].setScale(1.5, 1.5);
+		}
+		for (int i = 0; i < 3; i++)
+		{
+			birds[i] = bird.sprite;
+			birds[i].setTexture(bird.birds[0]);
+			//birds[i].setColor(Color(0, 0, 0, 255));
+			birds[i].setOrigin(birds[0].getGlobalBounds().width / 2, text[i].getGlobalBounds().height / 2);
+			birds[i].setScale(1.3, 1.3);
+		}
+
+		text[0].setPosition(SCREEN_W / 2, 900);
+		text[1].setPosition(SCREEN_W / 2,950);
+		text[2].setPosition(SCREEN_W / 2, 1000);
+		birds[0].setPosition(SCREEN_W / 2 + text[0].getGlobalBounds().width / 2 + 40 , 910);
+		birds[1].setPosition(SCREEN_W / 2 + text[1].getGlobalBounds().width / 2 + 40 , 960);
+		birds[2].setPosition(SCREEN_W / 2 + text[2].getGlobalBounds().width / 2 + 40 , 1010);
+	}
+	void draw() 
+	{
+		window.draw(black);
+		for (int i = 0; i < 3; i++)
+		{
+			window.draw(text[i]);
+			window.draw(birds[i]);
+		}
+	}
+	void move()
+	{
+		if (text[0].getPosition().y >= -SCREEN_H ) 
+		{
+			text[0].move(0, -1);
+			birds[0].move(0, -1);
+		}
+
+		if (text[1].getPosition().y >= -SCREEN_H + 50) 
+		{
+			text[1].move(0, -1);
+			birds[1].move(0, -1);
+		}
+
+		if (text[2].getPosition().y >=- SCREEN_H + 100) 
+		{
+			text[2].move(0,- 1);
+			birds[2].move(0,- 1);
+			
+		}
+	}
+	void wingMove() {
+
+
+		if (wingTimer.getElapsedTime().asMilliseconds() >= 150) {
+			currBird = (currBird + 1) % 3;
+			//currBird1 = (currBird + 1) % 3;
+			birds[0].setTexture(bird.birds[currBird]);
+			birds[1].setTexture(bird.birds[currBird]);
+			birds[2].setTexture(bird.birds[currBird]);
+			wingTimer.restart();
+
+
+		}
+
+
+	}
+}credits;
 int main() {
 	window.setFramerateLimit(60);
 	srand(time(NULL));
 	setAssests();
+
 	while (window.isOpen())
 	{
 		while (window.pollEvent(_event)) {
@@ -424,6 +506,18 @@ int main() {
 	return 0;
 }
 
+void setAssests() {
+	window.setFramerateLimit(60);
+	bird.set();
+	pipes.set();
+	game.setText();
+	die.setGameOver();
+	background.set();
+	game.setInvisible();
+	die.set();
+	collision.set();
+	credits.set();
+}
 void beforeStart() {
 	
 	bird.upp.setFillColor(Color::Red);
@@ -456,28 +550,13 @@ void playagain() {
 	collision.isCollided = false;
 	status = 2;
 }
-void updateScore() {
-	game.scoreText.setString("SCORE: " + to_string(game.score));
-	die.score.setString(to_string(game.score));
-	die.high.setString(to_string(game.highestScore));
-}
-void setAssests() {
-	window.setFramerateLimit(60);
-	bird.set();
-	pipes.set();
-	game.setText();
-	die.setGameOver();
-	background.set();
-	game.setInvisible();
-	die.set();
-	collision.set();
-}
 void draw() {
 	window.clear();
 	background.drawSky();
 	pipes.draw();
 	//window.draw(game.invisiblePipe);
-	bird.draw();
+	if(status != 4)
+		bird.draw();
 	
 	background.drawLand();
 	game.drawScore();
@@ -490,6 +569,10 @@ void draw() {
 	}
 	//window.draw(upp);
 	//window.draw(downn);
+	if (status == 4) {
+		//background.sky.setFillColor(Color::Black);
+	credits.draw();
+	}
 	window.display();
 }
 void updateStatus() 
@@ -518,7 +601,7 @@ void updateStatus()
 void gamePlay() 
 {
 	if (status == 1) {
-		background.moveLands(12);
+		background.moveLands(5.4);
 		bird.wingMove();
 		beforeStart();
 	}
@@ -547,7 +630,7 @@ void gamePlay()
 			bird.Fall();
 			pipes.move(5.3);
 			bird.wingMove();
-			background.moveLands(12);
+			background.moveLands(5.4);
 			game.scoreCount();
 		}
 
@@ -559,6 +642,18 @@ void gamePlay()
 		die.moveGameOver();
 	}
 	updateScore();
+	if (status == 4)
+	{
+		background.moveLands(12);
+		credits.move();
+		credits.wingMove();
+		
+	}
+}
+void updateScore() {
+	game.scoreText.setString("SCORE: " + to_string(game.score));
+	die.score.setString(to_string(game.score));
+	die.high.setString(to_string(game.highestScore));
 }
 void closeWindow(){
 		if (_event.type == Event::Closed)
