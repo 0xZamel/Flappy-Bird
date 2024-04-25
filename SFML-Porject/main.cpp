@@ -16,7 +16,7 @@ using namespace sf;
 int status = 1;
 
 
-RenderWindow window(VideoMode().getDesktopMode(), "Game", Style::Close | Style::Fullscreen);
+RenderWindow window(VideoMode(1700,800), "Game", Style::Close);
 Event _event;
 const float SCREEN_W = window.getSize().x;
 const float SCREEN_H = window.getSize().y;
@@ -106,6 +106,11 @@ struct BirdStruct
 }bird;
 struct pipeStruct
 {
+	Texture tx_up, tx_down;
+	const int GAP_H = 850;
+	const int GAP_X = 600;
+	const int PIPE_H = up[0].getGlobalBounds().height;
+	const int PIPE_W = up[0].getGlobalBounds().width;
 	Sprite up[3], down[3];
 	void set() {
 		tx_up.loadFromFile("PipeUp.png");
@@ -115,33 +120,29 @@ struct pipeStruct
 			down[i].setTexture(tx_down);
 			up[i].setScale(1.4, 1.8);
 			down[i].setScale(1.4, 1.8);
-			up[i].setPosition(SCREEN_W, 0);
-			down[i].setPosition(SCREEN_W, 0);
+		
 		}
-		int yPos = -(30 + rand() % 431);
-		int yPoss = -(30 + rand() % 431);
-		int yPosss = -(30 + rand() % 431);
-		down[0].setPosition( SCREEN_W+70 , yPos);
-		up[0].setPosition( SCREEN_W+70, yPos + GAP_H);
+
+		// 220 ---> 520
+		int yPos = -(220 + rand() % 301);
+		int yPoss = -(220 + rand() % 301);
+		int yPosss = -(220 + rand() % 301);
+		down[0].setPosition( SCREEN_W + 50 , yPos);
+		up[0].setPosition(SCREEN_W + 50, yPos + GAP_H);
 		down[1].setPosition(up[0].getPosition().x + GAP_X, yPoss);
 		up[1].setPosition(up[0].getPosition().x + GAP_X, yPoss + GAP_H);
 		down[2].setPosition(up[1].getPosition().x + GAP_X, yPosss);
 		up[2].setPosition(up[1].getPosition().x + GAP_X, yPosss + GAP_H);
 	}
-	Texture tx_up, tx_down;
-	const int GAP_H = 850;
-	const int GAP_X = 460;
-	const int PIPE_H = up[0].getGlobalBounds().height;
 	void move(float speed) {
 		for (int i = 0; i < 3; i++) {
 			up[i].move(Vector2f(-speed, 0));
 			down[i].move(Vector2f(-speed, 0));
-			if (up[i].getPosition().x <= -50) {
-				int yPos = -(30 + rand() % 431);
+			if (up[i].getPosition().x <= -pipes.PIPE_W-20) {
+				int yPos = -(220 + rand() % 301);
 				down[i].setPosition(SCREEN_W, yPos);
 				up[i].setPosition(SCREEN_W, yPos + GAP_H);
-				up[i].setPosition(SCREEN_W, up[i].getPosition().y);
-				down[i].setPosition(SCREEN_W, down[i].getPosition().y);
+			
 			}
 		}
 	}
@@ -211,7 +212,7 @@ struct gameStruct
 		invisiblePipe.setScale(0.9, 2);
 		tx.loadFromFile("PipeUp.png");
 		invisiblePipe.setTexture(tx);
-		invisiblePipe.setPosition(SCREEN_W /2 - 50, 400);
+		invisiblePipe.setPosition(SCREEN_W /2 - 100, 400);
 		invisiblePipe.setColor(Color::Red);
 
 	}
@@ -263,25 +264,25 @@ struct gameStruct
 
 }game;
 struct backgroundStruct {
-
-	Sprite sky; Texture skyT, landT; Sprite lands[3];
+	RectangleShape sky; Texture skyT, landT; Sprite lands[3];
 	int currLand = 0; // TO MOVE THE LAND 
 	Text score;
 	void set() {
-
+		RectangleShape skyy(Vector2f(SCREEN_W, SCREEN_H));
+		sky = skyy;
 		skyT.loadFromFile("sky.png");
 		landT.loadFromFile("land.png");
-		sky.setTexture(skyT);
-		sky.setScale(1.7, 1);
+		sky.setTexture(&skyT);
+		
 
 
 		for (int i = 0; i < 3; i++) {
 			lands[i].setTexture(landT);
-			lands[i].setScale(1.2, 0.6);
+			lands[i].setScale(1.7, 0.7);
 		}
 		lands[0].setPosition(Vector2f(0, SCREEN_H-60));
-		lands[1].setPosition(Vector2f(lands[0].getGlobalBounds().width-7.8, SCREEN_H-60));
-		lands[2].setPosition(Vector2f(2*lands[0].getGlobalBounds().width-15.6, SCREEN_H-60));
+		lands[1].setPosition(Vector2f(lands[0].getGlobalBounds().width-14, SCREEN_H-60));
+		lands[2].setPosition(Vector2f(2*lands[0].getGlobalBounds().width-28, SCREEN_H-60));
 		// diffrecne between them = 36
 
 
@@ -303,8 +304,8 @@ struct backgroundStruct {
 		currLand++;
 		currLand %= 3;
 		for (int i = 0; i < 3; i++) {
-			if (lands[i].getPosition().x <= -SCREEN_W - 7.7) {
-				lands[i].setPosition(Vector2f(SCREEN_W - 7.8, SCREEN_H - 60));
+			if (lands[i].getPosition().x <= -SCREEN_W ) {
+				lands[i].setPosition(Vector2f(SCREEN_W , SCREEN_H - 60));
 			}
 			
 		}
@@ -407,6 +408,7 @@ struct died
 }die;
 
 int main() {
+	window.setFramerateLimit(60);
 	srand(time(NULL));
 	setAssests();
 	while (window.isOpen())
@@ -516,7 +518,7 @@ void updateStatus()
 void gamePlay() 
 {
 	if (status == 1) {
-		background.moveLands(5);
+		background.moveLands(12);
 		bird.wingMove();
 		beforeStart();
 	}
@@ -545,7 +547,7 @@ void gamePlay()
 			bird.Fall();
 			pipes.move(5.3);
 			bird.wingMove();
-			background.moveLands(9);
+			background.moveLands(12);
 			game.scoreCount();
 		}
 
@@ -559,16 +561,11 @@ void gamePlay()
 	updateScore();
 }
 void closeWindow(){
-	while (window.pollEvent(_event)) 
-	{
 		if (_event.type == Event::Closed)
 		{
 			window.close();
-			break;
 		}
-	}
 }
-
 void BirdStruct::Jump(float speed)
 {
 	if (_event.type == Event::KeyPressed) {
